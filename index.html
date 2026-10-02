@@ -1,0 +1,225 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #101124;
+            color: white;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 30px;
+            background: #20213b;
+            border-radius: 18px;
+            box-shadow: 0 5px 25px #0005;
+        }
+
+        h1 {
+            color: #b794ff;
+            font-size: 32px;
+        }
+
+        p {
+            color: #ccccdd;
+        }
+
+        textarea, select {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: 1px solid #555577;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        textarea {
+            height: 110px;
+            resize: vertical;
+        }
+
+        select {
+            background: white;
+            color: #222;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background: linear-gradient(90deg, #7c3aed, #a855f7);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        #status {
+            margin: 20px 0;
+            overflow-wrap: anywhere;
+        }
+
+        #result {
+            margin-top: 20px;
+        }
+
+        #result img {
+            width: 100%;
+            max-width: 512px;
+            border-radius: 12px;
+        }
+
+        #download {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 20px;
+            background: #16a34a;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>✨ AI Image Generator</h1>
+        <p>Turn your imagination into amazing images!</p>
+
+        <label for="prompt">Describe the image you want:</label>
+
+        <textarea id="prompt"
+            placeholder="Example: A beautiful butterfly in a colorful garden"></textarea>
+
+        <label for="style">Choose Image Style:</label>
+
+        <select id="style">
+            <option value="realistic">Realistic</option>
+            <option value="anime">Anime</option>
+            <option value="3D digital art">3D Art</option>
+            <option value="fantasy digital art">Fantasy</option>
+            <option value="watercolor painting">Painting</option>
+        </select>
+
+        <button id="generate" onclick="generateImage()">
+            ✨ Generate Image
+        </button>
+
+        <p id="status">Enter a prompt to begin.</p>
+
+        <div id="result"></div>
+
+    </div>
+
+    <script>
+        function generateImage() {
+            const prompt =
+                document.getElementById("prompt").value.trim();
+
+            const style =
+                document.getElementById("style").value;
+
+            const button =
+                document.getElementById("generate");
+
+            const status =
+                document.getElementById("status");
+
+            const result =
+                document.getElementById("result");
+
+            if (prompt === "") {
+                alert("Please enter an image description!");
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = "Generating Image...";
+            status.textContent =
+                "Please wait. Creating your image...";
+
+            result.innerHTML = "";
+
+            const description = prompt + ", " + style + " style";
+
+            const imageUrl =
+                "https://image.pollinations.ai/prompt/" +
+                encodeURIComponent(description) +
+                "?width=512&height=512&seed=" +
+                Math.floor(Math.random() * 1000000);
+
+            const image = new Image();
+            image.alt = prompt;
+
+            image.onload = function () {
+                result.innerHTML = "";
+                result.appendChild(image);
+
+                const link = document.createElement("a");
+                link.id = "download";
+                link.href = image.src;
+                link.target = "_blank";
+                link.rel = "noopener";
+                link.textContent = "Open Image to Save";
+
+                result.appendChild(document.createElement("br"));
+                result.appendChild(link);
+
+                status.textContent =
+                    "Image generated successfully! 🎉";
+
+                button.disabled = false;
+                button.textContent = "✨ Generate Image";
+            };
+
+            image.onerror = function () {
+                status.textContent =
+                    "Could not generate the image. The image service may be unavailable. Please try again later.";
+
+                button.disabled = false;
+                button.textContent = "✨ Generate Image";
+            };
+
+            image.src = imageUrl;
+        }
+    </script>
+
+</body>
+</html>
